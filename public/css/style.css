@@ -1,0 +1,221 @@
+/*
+  DESIGN PRINCIPLES INCORPORATED:
+  1. Contrast: Deep Blue / Charcoal (#0f172a) vs Vibrant Cyan Accent (#0284c7)
+  2. Rule of Thirds: 2/3 text, 1/3 media layout split on Hero section.
+  3. Color Scheme: Modern Dark/Light Balance with cohesive slate/sky variables.
+  4. Hierarchical Typography: Distinct weight drops (800 title, 600 subtitle, 400 body).
+  5. White Space: Generous line-heights, 2rem to 4rem padding blocks.
+*/
+
+:root {
+    --bg-primary: #f8fafc;
+    --surface: #ffffff;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --accent: #0284c7;
+    --accent-hover: #0369a1;
+    --border: #e2e8f0;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-dark);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 5%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+.logo span { color: var(--accent); }
+
+.nav-links a {
+    margin: 0 1rem;
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--accent); }
+
+/* HERO SPLIT (RULE OF THIRDS) */
+.hero-split {
+    display: grid;
+    grid-template-columns: 1.8fr 1.2fr;
+    gap: 3rem;
+    padding: 4rem 5%;
+    align-items: center;
+}
+
+.hero-text h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 1rem 0;
+}
+
+.hero-text p {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.badge {
+    background: #e0f2fe;
+    color: var(--accent);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.hero-image img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+/* BUTTONS */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary { background: var(--text-dark); color: white; }
+.btn-accent { background: var(--accent); color: white; }
+.btn-accent:hover { background: var(--accent-hover); }
+.btn-outline { border: 2px solid var(--text-dark); background: transparent; }
+.btn-lg { padding: 1rem 2rem; font-size: 1rem; }
+.btn-full { width: 100%; margin-top: 1rem; }
+
+/* FEATURES GRID */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 2rem 5% 4rem;
+}
+
+.feature-card {
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+/* PRODUCT CARD GRID */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin: 0.5rem 0;
+}
+
+/* PAGE SECTIONS & MODALS */
+.page-section { padding: 2rem 5%; }
+.hidden { display: none !important; }
+
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white; padding: 2.5rem; border-radius: 12px;
+    width: 100%; max-width: 450px; position: relative;
+}
+
+.close-btn { position: absolute; right: 1.5rem; top: 1rem; font-size: 1.5rem; cursor: pointer; }
+
+input, select, textarea {
+    width: 100%; padding: 0.75rem; margin-top: 0.75rem;
+    border: 1px solid var(--border); border-radius: 6px;
+}
+
+/* SITEMAP & FOOTER */
+footer {
+    background: var(--text-dark);
+    color: white;
+    margin-top: auto;
+    padding: 3rem 5% 1rem;
+}
+
+.sitemap {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.sitemap h4 { color: var(--accent); margin-bottom: 1rem; }
+.sitemap ul { list-style: none; }
+.sitemap a { color: #94a3b8; text-decoration: none; line-height: 2; }
+
+.footer-bottom {
+    border-top: 1px solid #334155;
+    text-align: center;
+    padding-top: 1rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
