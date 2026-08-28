@@ -283,7 +283,6 @@
 
     <!-- GLOBAL FALLBACK HANDLERS & NAVIGATION SCRIPT -->
     <script>
-      // Ensures buttons work even if index.js fails to load or load slowly
       window.showSection = window.showSection || function(id) {
           document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
           const target = document.getElementById('sec-' + id);
@@ -322,7 +321,7 @@
       })(document, 'script');
     </script>
 
-    <!-- LINK EXTERNAL APPLICATION SCRIPT (RELATIVE ROUTE) -->
+    <!-- MAIN JAVASCRIPT LOGIC FILE -->
     <script src="index.js"></script>
 </body>
 </html>
