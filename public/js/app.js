@@ -2,237 +2,175 @@ const API_URL = '/api';
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;
 let userToken = localStorage.getItem('token') || null;
 
+// Initial Setup
+document.addEventListener('DOMContentLoaded', () => {
+  updateAuthUI();
+  showSection('home');
+});
+
 // PAGE ROUTING
 function showSection(sectionId) {
-    document.querySelectorAll('.page-section').forEach(sec => sec.classList.add('hidden'));
-    document.getElementById(`${sectionId}-section`).classList.remove('hidden');
-    if (sectionId === 'store') loadProducts();
-    if (sectionId === 'dashboard') loadDashboard('buyer');
+  document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+  
+  const targetSection = document.getElementById(`view-${sectionId}`);
+  if (targetSection) {
+    targetSection.classList.remove('hidden');
+  }
+
+  if (sectionId === 'store') loadProducts();
+  if (sectionId === 'dashboard') loadDashboard('buyer');
 }
 
 // UI AUTH STATE SYNC
 function updateAuthUI() {
-    const userDisplay = document.getElementById('user-display');
-    const authBtn = document.getElementById('auth-btn');
-    const navDashboard = document.getElementById('nav-dashboard');
+  const userDisplay = document.getElementById('user-display');
+  const authBtn = document.getElementById('auth-btn');
+  const navDashboard = document.getElementById('nav-dashboard');
 
-    if (currentUser) {
-        userDisplay.textContent = `Hi, ${currentUser.name}`;
-        userDisplay.classList.remove('hidden');
-        navDashboard.classList.remove('hidden');
-        authBtn.textContent = 'Logout';
-        authBtn.onclick = handleLogout;
-    } else {
-        userDisplay.classList.add('hidden');
-        navDashboard.classList.add('hidden');
-        authBtn.textContent = 'Login / Register';
-        authBtn.onclick = openAuthModal;
+  if (currentUser) {
+    if (userDisplay) {
+      userDisplay.textContent = `Hi, ${currentUser.email}`;
+      userDisplay.classList.remove('hidden');
     }
-}
-
-// AUTH MODAL HANDLERS
-function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
-function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
-function openSellModal() { 
-    if (!currentUser) return openAuthModal();
-    document.getElementById('sell-modal').classList.remove('hidden'); 
-}
-function closeSellModal() { document.getElementById('sell-modal').classList.add('hidden'); }
-
-function toggleAuthForm(type) {
-    if (type === 'login') {
-        document.getElementById('login-form').classList.remove('hidden');
-        document.getElementById('register-form').classList.add('hidden');
-    } else {
-        document.getElementById('login-form').classList.add('hidden');
-        document.getElementById('register-form').classList.remove('hidden');
+    if (navDashboard) navDashboard.classList.remove('hidden');
+    if (authBtn) {
+      authBtn.textContent = 'Logout';
+      authBtn.onclick = handleLogout;
     }
+  } else {
+    if (userDisplay) userDisplay.classList.add('hidden');
+    if (navDashboard) navDashboard.classList.add('hidden');
+    if (authBtn) {
+      authBtn.textContent = 'Sign In';
+      authBtn.onclick = () => showSection('login');
+    }
+  }
 }
 
-async function handleLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+// AUTHENTICATION HANDLERS
+async function handleRegister(event) {
+  event.preventDefault();
+  const email = document.getElementById('reg-email').value;
+  const password = document.getElementById('reg-password').value;
+  const gcash = document.getElementById('reg-gcash').value;
+  const accountType = document.getElementById('reg-account-type').value;
 
-    const res = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+  try {
+    const res = await fetch(`${API_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, gcash_number: gcash, role: accountType }),
     });
+
     const data = await res.json();
-    if (res.ok) {
-        currentUser = data.user;
-        userToken = data.token;
-        localStorage.setItem('user', JSON.stringify(currentUser));
-        localStorage.setItem('token', userToken);
-        updateAuthUI();
-        closeAuthModal();
-    } else {
-        alert(data.error);
-    }
+    if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+    alert('Registration successful! Please sign in.');
+    showSection('login');
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
-async function handleRegister(e) {
-    e.preventDefault();
-    const full_name = document.getElementById('reg-name').value;
-    const email = document.getElementById('reg-email').value;
-    const gcash_number = document.getElementById('reg-gcash').value;
-    const password = document.getElementById('reg-password').value;
+async function handleLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
 
-    const res = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name, email, gcash_number, password })
+  try {
+    const res = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
-    if (res.ok) {
-        alert('Registration successful! Please login.');
-        toggleAuthForm('login');
-    } else {
-        const data = await res.json();
-        alert(data.error);
-    }
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Invalid login credentials');
+
+    currentUser = data.user;
+    userToken = data.token;
+    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('token', data.token);
+
+    updateAuthUI();
+    showSection('store');
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
 function handleLogout() {
-    localStorage.clear();
-    currentUser = null;
-    userToken = null;
-    updateAuthUI();
-    showSection('home');
+  currentUser = null;
+  userToken = null;
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+  updateAuthUI();
+  showSection('home');
 }
 
-// STORE & PRODUCTS
+// PRODUCT LOADING
 async function loadProducts() {
+  const container = document.getElementById('product-list');
+  if (!container) return;
+
+  try {
     const res = await fetch(`${API_URL}/products`);
     const products = await res.json();
-    const container = document.getElementById('product-grid');
-    container.innerHTML = '';
 
-    products.forEach(p => {
-        container.innerHTML += `
-            <div class="product-card">
-                <img src="${p.image_url}" alt="${p.title}">
-                <div class="product-info">
-                    <h3>${p.title}</h3>
-                    <p class="product-price">₱${p.price.toFixed(2)}</p>
-                    <p>${p.description}</p>
-                    <button class="btn btn-accent" style="margin-top:1rem;" onclick="buyProduct('${p.id}')">Buy Now</button>
-                    <div style="margin-top:10px;">
-                        <button class="btn btn-outline" onclick="loadReviews('${p.id}')">Reviews</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
+    container.innerHTML = products.map(prod => `
+      <div class="product-card">
+        <h3>${prod.name}</h3>
+        <p>₱${prod.price.toFixed(2)}</p>
+        <button onclick="buyProduct('${prod.id}', ${prod.price}, '${prod.name}')">
+          Pay via GCash / Card
+        </button>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('Error loading products:', err);
+  }
 }
 
-async function handleCreateProduct(e) {
-    e.preventDefault();
-    const payload = {
-        title: document.getElementById('prod-title').value,
-        price: document.getElementById('prod-price').value,
-        category: document.getElementById('prod-category').value,
-        image_url: document.getElementById('prod-image').value,
-        description: document.getElementById('prod-desc').value,
-    };
+// CHECKOUT / PAYMENT HANDLER
+async function buyProduct(productId, price, productName) {
+  if (!currentUser) {
+    alert('Please sign in to make a purchase.');
+    showSection('login');
+    return;
+  }
 
-    const res = await fetch(`${API_URL}/products`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${userToken}`
-        },
-        body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-        closeSellModal();
-        showSection('store');
-    } else {
-        alert('Failed to list product');
-    }
-}
-
-// CHECKOUT INTEGRATION
-async function buyProduct(productId) {
-    if (!currentUser) return openAuthModal();
-
-    const res = await fetch(`${API_URL}/payments/checkout`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${userToken}`
-        },
-        body: JSON.stringify({ items: [{ product_id: productId, quantity: 1 }] })
+  try {
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userToken}`
+      },
+      body: JSON.stringify({
+        productId: productId,
+        buyerId: currentUser.id,
+        amount: price * 100, // Converts PHP to centavos for PayMongo
+        lineItems: [
+          {
+            currency: 'PHP',
+            amount: Math.round(price * 100),
+            name: productName,
+            quantity: 1,
+          },
+        ],
+      }),
     });
 
-    const data = await res.json();
-    if (res.ok && data.checkout_url) {
-        window.location.href = data.checkout_url;
+    const data = await response.json();
+
+    if (response.ok && data.checkoutUrl) {
+      window.location.href = data.checkoutUrl;
     } else {
-        alert('Checkout error');
+      console.error('API Error:', data);
+      alert(data.error || 'Could not generate checkout session.');
     }
+  } catch (error) {
+    console.error('Checkout Error:', error);
+    alert('Failed to initiate checkout. Please try again.');
+  }
 }
-
-// REVIEWS SYSTEM
-async function loadReviews(productId) {
-    const res = await fetch(`${API_URL}/reviews/${productId}`);
-    const reviews = await res.json();
-    let text = reviews.map(r => `⭐ ${r.rating}/5 - ${r.comment}`).join('\n') || 'No reviews yet.';
-    
-    let newRating = prompt(`${text}\n\nEnter Rating (1-5) to submit yours:`);
-    if (newRating) {
-        let newComment = prompt('Enter Review Comment:');
-        await fetch(`${API_URL}/reviews`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken}`
-            },
-            body: JSON.stringify({ product_id: productId, rating: newRating, comment: newComment })
-        });
-        alert('Review Added!');
-    }
-}
-
-// DASHBOARD
-async function loadDashboard(type) {
-    if (type === 'buyer') {
-        const res = await fetch(`${API_URL}/dashboard/buyer`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        const orders = await res.json();
-        document.getElementById('buyer-orders-list').innerHTML = orders.map(o => `
-            <div style="border-bottom:1px solid #ccc; padding:10px 0;">
-                <p><strong>Order ID:</strong> ${o.id}</p>
-                <p>Status: <strong>${o.status}</strong> | Total: ₱${o.total_amount}</p>
-            </div>
-        `).join('');
-    } else {
-        const res = await fetch(`${API_URL}/dashboard/seller`, {
-            headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-        const sales = await res.json();
-        document.getElementById('seller-sales-list').innerHTML = sales.map(s => `
-            <div style="border-bottom:1px solid #ccc; padding:10px 0;">
-                <p><strong>Product:</strong> ${s.products.title}</p>
-                <p>Amount: ₱${s.price} | Status: ${s.orders.status}</p>
-            </div>
-        `).join('');
-    }
-}
-
-function switchDashTab(tab) {
-    if (tab === 'buyer') {
-        document.getElementById('buyer-history').classList.remove('hidden');
-        document.getElementById('seller-history').classList.add('hidden');
-        loadDashboard('buyer');
-    } else {
-        document.getElementById('buyer-history').classList.add('hidden');
-        document.getElementById('seller-history').classList.remove('hidden');
-        loadDashboard('seller');
-    }
-}
-
-// INIT
-updateAuthUI();
