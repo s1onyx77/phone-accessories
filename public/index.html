@@ -37,6 +37,10 @@
             grid-template-columns: 2fr 1fr;
             grid-template-rows: auto;
         }
+        /* Voiceflow Widget Z-Index Fix */
+        #voiceflow-chat, .vkw-container {
+            z-index: 9999 !important;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased flex flex-col min-h-screen">
@@ -49,7 +53,7 @@
                 <span class="bg-brand-500 text-white px-2 py-1 rounded-lg text-xl"><i class="fa-solid font-bold fa-bolt"></i></span> AURA GEAR
             </a>
 
-            <!-- Nav Links: Home, Store Page, About Us, Contact, Seller/Buyer Dashboard -->
+            <!-- Nav Links -->
             <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
                 <button onclick="showSection('home')" class="hover:text-brand-600 transition">Home</button>
                 <button onclick="showSection('store')" class="hover:text-brand-600 transition">Store Page</button>
@@ -58,7 +62,7 @@
                 <button id="nav-dashboard" onclick="showSection('dashboard')" class="hidden hover:text-brand-600 transition text-brand-600 font-bold">Dashboard</button>
             </nav>
 
-            <!-- Authentication Controls -->
+            <!-- Auth Buttons -->
             <div class="flex items-center gap-4">
                 <div id="auth-guest" class="flex gap-3">
                     <button onclick="openAuthModal('login')" class="text-sm font-semibold text-slate-700 hover:text-brand-600 px-3 py-2">Log In</button>
@@ -77,7 +81,7 @@
         
         <!-- SECTION: HOME -->
         <section id="sec-home" class="block">
-            <!-- Hero (Rule of Thirds Alignment & High Contrast visual hierarchy) -->
+            <!-- Hero Grid -->
             <div class="max-w-7xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-3 gap-12 items-center">
                 <div class="md:col-span-2 space-y-6">
                     <span class="text-brand-600 font-bold tracking-widest uppercase text-xs">Next-Gen Protection & Style</span>
@@ -87,14 +91,11 @@
                     <p class="text-lg text-slate-600 max-w-xl font-normal leading-relaxed">
                         Discover minimalist cases, ultra-fast MagSafe chargers, and high-clarity lens protectors engineered for durability and style.
                     </p>
-                    
-                    <!-- Call To Action (CTA) -->
                     <div class="pt-4 flex items-center gap-4">
                         <button onclick="showSection('store')" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-brand-600 transition shadow-lg">Shop Collection</button>
                         <button onclick="openSellModal()" class="border-2 border-slate-200 text-slate-700 px-8 py-4 rounded-xl font-bold hover:border-slate-900 transition">Sell Gear</button>
                     </div>
                 </div>
-                <!-- Visual focal point -->
                 <div class="md:col-span-1">
                     <div class="relative rounded-3xl bg-gradient-to-tr from-brand-500 to-teal-200 p-2 shadow-2xl">
                         <img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=600&q=80" alt="Phone Accessory" class="rounded-2xl w-full object-cover">
@@ -102,7 +103,7 @@
                 </div>
             </div>
 
-            <!-- Features / Body Section (Ample White Space) -->
+            <!-- Features Section -->
             <div class="bg-white py-20 border-y border-slate-100">
                 <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-8">
                     <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
@@ -124,7 +125,7 @@
             </div>
         </section>
 
-        <!-- SECTION: STORE PAGE -->
+        <!-- SECTION: STORE -->
         <section id="sec-store" class="hidden max-w-7xl mx-auto px-6 py-12">
             <div class="flex justify-between items-center mb-8">
                 <div>
@@ -133,24 +134,21 @@
                 </div>
                 <button onclick="openSellModal()" class="bg-brand-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-brand-500"><i class="fa-solid fa-plus mr-2"></i>Post Item for Sale</button>
             </div>
-            <!-- Dynamic Product Grid -->
             <div id="products-grid" class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <!-- Products dynamically loaded by public/index.js -->
+                <!-- Products dynamically loaded -->
             </div>
         </section>
 
-        <!-- SECTION: DASHBOARD (SELLER & BUYER HISTORY) -->
+        <!-- SECTION: DASHBOARD -->
         <section id="sec-dashboard" class="hidden max-w-7xl mx-auto px-6 py-12">
             <h2 class="text-3xl font-extrabold text-slate-900 mb-6">User Dashboard</h2>
             <div class="grid md:grid-cols-2 gap-8">
-                <!-- Buyer Bought History -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                     <h3 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-bag-shopping text-brand-600 mr-2"></i>Purchase History</h3>
                     <div id="bought-history" class="space-y-4 text-sm text-slate-600">
                         <p>Loading history...</p>
                     </div>
                 </div>
-                <!-- Seller Sales History -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                     <h3 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-chart-line text-brand-600 mr-2"></i>Sales History</h3>
                     <div id="sales-history" class="space-y-4 text-sm text-slate-600">
@@ -185,14 +183,13 @@
         </section>
     </main>
 
-    <!-- 4. SITEMAP & 5. FOOTER -->
+    <!-- FOOTER -->
     <footer class="bg-slate-900 text-white border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-8 text-sm">
             <div class="space-y-3">
                 <span class="text-xl font-black tracking-wider text-white">AURA GEAR</span>
                 <p class="text-slate-400 text-xs">Premium accessories designed for simplicity, minimalism, and performance.</p>
             </div>
-            <!-- Sitemap -->
             <div>
                 <h4 class="font-bold mb-3 text-brand-500 uppercase text-xs tracking-wider">Sitemap</h4>
                 <ul class="space-y-2 text-slate-400">
@@ -221,7 +218,7 @@
         </div>
     </footer>
 
-    <!-- MODAL: AUTHENTICATION (REGISTER / LOGIN WITH GCASH NUMBER) -->
+    <!-- MODAL: AUTHENTICATION -->
     <div id="modal-auth" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl">
             <button onclick="closeModal('modal-auth')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -248,7 +245,7 @@
         </div>
     </div>
 
-    <!-- MODAL: POST PRODUCT FOR SELLERS -->
+    <!-- MODAL: POST PRODUCT -->
     <div id="modal-sell" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl">
             <button onclick="closeModal('modal-sell')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -284,7 +281,29 @@
         </div>
     </div>
 
-    <!-- 6. VOICEFLOW AI CHATBOT EMBED INTEGRATION -->
+    <!-- GLOBAL FALLBACK HANDLERS & NAVIGATION SCRIPT -->
+    <script>
+      // Ensures buttons work even if index.js fails to load or load slowly
+      window.showSection = window.showSection || function(id) {
+          document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+          const target = document.getElementById('sec-' + id);
+          if (target) target.classList.remove('hidden');
+      };
+      window.openAuthModal = window.openAuthModal || function(type) {
+          const modal = document.getElementById('modal-auth');
+          if (modal) modal.classList.remove('hidden');
+      };
+      window.openSellModal = window.openSellModal || function() {
+          const modal = document.getElementById('modal-sell');
+          if (modal) modal.classList.remove('hidden');
+      };
+      window.closeModal = window.closeModal || function(id) {
+          const modal = document.getElementById(id);
+          if (modal) modal.classList.add('hidden');
+      };
+    </script>
+
+    <!-- VOICEFLOW CHATBOT EMBED -->
     <script type="text/javascript">
       (function(d, t) {
           var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
@@ -303,7 +322,7 @@
       })(document, 'script');
     </script>
 
-    <!-- LINK EXTERNAL JS APPLICATION SCRIPT -->
-    <script src="/index.js"></script>
+    <!-- LINK EXTERNAL APPLICATION SCRIPT (RELATIVE ROUTE) -->
+    <script src="index.js"></script>
 </body>
 </html>
